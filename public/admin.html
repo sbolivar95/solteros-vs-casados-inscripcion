@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0e6">
+  <meta name="robots" content="noindex">
+  <title>Encargado · Solteros vs Casados</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <main class="pagina">
+    <header>
+      <p class="fecha">Domingo 29 de noviembre</p>
+      <h1>Encargado</h1>
+      <p class="aviso">Inscribe en persona o el día del partido. La lista no se comparte en el link público.</p>
+    </header>
+
+    <form id="entrada" novalidate>
+      <p class="error" id="error-entrada" role="alert"></p>
+      <label class="campo">Clave
+        <input id="clave" type="password" autocomplete="current-password" required>
+      </label>
+      <button class="primario" id="boton-entrar" type="submit">Entrar</button>
+    </form>
+
+    <div id="panel" hidden>
+      <section class="conteos" aria-live="polite">
+        <article class="tarjeta">
+          <h2>Solteros</h2>
+          <p class="numero" id="n-solteros">0</p>
+          <p class="cuota" id="c-solteros"></p>
+          <p class="meta" id="j-solteros"></p>
+        </article>
+        <article class="tarjeta">
+          <h2>Casados</h2>
+          <p class="numero" id="n-casados">0</p>
+          <p class="cuota" id="c-casados"></p>
+          <p class="meta" id="j-casados"></p>
+        </article>
+      </section>
+
+      <form id="ajustes" class="seccion" novalidate>
+        <h2>Monto a recaudar</h2>
+        <p class="ayuda">Ese total se parte a la mitad: cada equipo junta la suya, y esa mitad se divide entre las personas de ese equipo.</p>
+        <p class="error" id="error-ajustes" role="alert"></p>
+        <p class="ok" id="ok-ajustes"></p>
+        <label class="campo">Monto total
+          <input class="caja" id="monto" type="text" inputmode="decimal" autocomplete="off" placeholder="500">
+        </label>
+        <button class="primario" id="guardar-ajustes" type="submit">Guardar monto</button>
+      </form>
+
+      <form id="alta" class="seccion" novalidate>
+        <h2>Inscribir a alguien</h2>
+        <p class="error" id="error-alta" role="alert"></p>
+        <p class="ok" id="ok-alta"></p>
+        <label class="campo">Nombre
+          <input id="nombre" type="text" autocomplete="name" maxlength="80" required>
+        </label>
+        <label class="campo">Celular
+          <input class="caja" id="celular" type="text" inputmode="numeric" autocomplete="tel" maxlength="20" placeholder="Número de celular" required>
+        </label>
+        <div class="campo">Equipo
+          <div class="equipos">
+            <button type="button" class="equipo" id="equipo-solteros" aria-pressed="false">Solteros</button>
+            <button type="button" class="equipo" id="equipo-casados" aria-pressed="false">Casados</button>
+          </div>
+        </div>
+        <button class="primario" id="boton-alta" type="submit">Inscribir</button>
+      </form>
+
+      <section class="seccion">
+        <h2>Lista</h2>
+        <label class="campo">Buscar
+          <input id="buscar" type="search" placeholder="Nombre o celular">
+        </label>
+        <div id="lista"></div>
+      </section>
+
+      <form id="clave-nueva" class="seccion" novalidate>
+        <h2>Cambiar clave</h2>
+        <p class="error" id="error-clave" role="alert"></p>
+        <p class="ok" id="ok-clave"></p>
+        <label class="campo">Clave nueva
+          <input id="nueva" type="password" autocomplete="new-password" required>
+        </label>
+        <label class="campo">Repetir clave
+          <input id="repetir" type="password" autocomplete="new-password" required>
+        </label>
+        <button class="secundario" id="boton-clave" type="submit">Cambiar clave</button>
+      </form>
+
+      <p class="pie">
+        <button class="secundario" id="salir" type="button">Salir</button>
+        <a href="index.html">Volver a la inscripción</a>
+      </p>
+    </div>
+  </main>
+  <script src="config.js"></script>
+  <script src="api.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

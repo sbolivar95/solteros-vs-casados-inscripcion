@@ -1,0 +1,149 @@
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.4;
+  color: #1c1917;
+  background: #f4f0e6;
+}
+
+.pagina {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding-top: calc(16px + env(safe-area-inset-top));
+  padding-bottom: calc(28px + env(safe-area-inset-bottom));
+  padding-left: calc(16px + env(safe-area-inset-left));
+  padding-right: calc(16px + env(safe-area-inset-right));
+}
+
+h1 { margin: 0 0 4px; font-size: 1.7rem; line-height: 1.15; }
+h2 { margin: 0 0 4px; font-size: 1rem; }
+h3 { margin: 0 0 4px; font-size: 1.05rem; }
+
+.fecha, .aviso, .meta, .ayuda { margin: 0; color: #44403c; }
+.fecha { font-weight: 700; }
+.aviso, .ayuda { margin-top: 8px; }
+.extra { margin: 8px 0 0; font-weight: 700; }
+
+.tarjeta, .persona, .panel {
+  background: #fff;
+  border: 1px solid #e7e0d6;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 8px;
+}
+
+.numero { margin: 0; font-size: 1.7rem; font-weight: 700; }
+.cuota { margin: 0; }
+
+.campo { display: block; font-weight: 700; margin: 14px 0; overflow: visible; }
+
+.caja,
+.campo input:not([type="checkbox"]),
+.campo select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 6px;
+  min-height: 48px;
+  height: 48px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.2;
+  border: 1px solid #a8a29e;
+  border-radius: 12px;
+  background: #fff;
+  color: #1c1917;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.equipos { display: flex; margin-top: 6px; }
+.equipos button { flex: 1; margin-right: 8px; }
+.equipos button:last-child { margin-right: 0; }
+
+button, .enlace {
+  font: inherit;
+  font-size: 16px;
+  min-height: 48px;
+  border-radius: 12px;
+  touch-action: manipulation;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #a8a29e;
+  background: #fff;
+  color: #1c1917;
+  font-weight: 700;
+}
+
+.equipo[aria-pressed="true"] { color: #fff; }
+#elegir-solteros[aria-pressed="true"],
+#equipo-solteros[aria-pressed="true"] { background: #1e3a8a; border-color: #1e3a8a; }
+#elegir-casados[aria-pressed="true"],
+#equipo-casados[aria-pressed="true"] { background: #9a3412; border-color: #9a3412; }
+
+.primario { background: #14532d; color: #fff; border-color: #14532d; margin-top: 8px; }
+.secundario { background: #fff; color: #14532d; border-color: #14532d; margin-top: 8px; }
+.peligro { background: #fff; color: #9f1239; border-color: #9f1239; margin-top: 8px; }
+button:disabled { opacity: 0.6; }
+
+#listo { margin-top: 16px; }
+#listo p { margin: 8px 0 0; }
+
+.compromiso {
+  display: flex;
+  align-items: flex-start;
+  min-height: 48px;
+  margin: 14px 0;
+  font-weight: 700;
+}
+.compromiso input,
+.pago input { width: 24px; height: 24px; margin: 2px 12px 0 0; flex: none; }
+
+.pago {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  margin: 8px 0 0;
+  font-weight: 700;
+}
+
+.persona.pagada { border-color: #14532d; }
+
+.error { color: #9f1239; font-weight: 700; min-height: 1.4em; }
+.ok { color: #14532d; font-weight: 700; }
+
+.link-caja {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  min-height: 48px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 16px;
+  border: 1px solid #a8a29e;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.pie { margin-top: 22px; }
+.pie a, a.telefono { color: #1e3a8a; }
+.pie a { display: block; margin-top: 12px; min-height: 48px; line-height: 48px; }
+a.telefono { font-weight: 700; }
+
+button:focus, input:focus, a:focus, textarea:focus {
+  outline: 3px solid #1e3a8a;
+  outline-offset: 2px;
+}
+
+.seccion { margin-top: 22px; }
+.persona button { margin-top: 8px; }

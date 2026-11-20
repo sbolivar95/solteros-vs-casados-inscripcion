@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0e6">
+  <title>Solteros vs Casados</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <main class="pagina">
+    <header>
+      <p class="fecha">Domingo 29 de noviembre</p>
+      <h1>Solteros vs Casados</h1>
+    </header>
+
+    <form id="form" novalidate>
+      <p class="error" id="error" role="alert"></p>
+      <label class="campo">Nombre
+        <input class="caja" id="nombre" name="nombre" type="text" autocomplete="name" maxlength="80" required>
+      </label>
+      <label class="campo">Celular
+        <input class="caja" id="celular" name="celular" type="text" inputmode="numeric" autocomplete="tel" maxlength="20" placeholder="Número de celular" required>
+      </label>
+      <div class="campo">Equipo
+        <div class="equipos">
+          <button type="button" class="equipo" id="elegir-solteros" aria-pressed="false">Solteros</button>
+          <button type="button" class="equipo" id="elegir-casados" aria-pressed="false">Casados</button>
+        </div>
+      </div>
+      <label class="compromiso">
+        <input id="compromiso" type="checkbox">
+        <span>Al inscribirme, me comprometo a pagar mi cuota aunque no juegue. No podré cancelar mi inscripción.</span>
+      </label>
+      <button class="primario" id="enviar" type="submit">Inscribirme</button>
+    </form>
+
+    <section id="listo" hidden>
+      <h2 id="listo-titulo">Listo</h2>
+      <p id="listo-detalle"></p>
+      <p class="ok" id="copiado" hidden>Link copiado.</p>
+      <button class="primario" id="compartir-listo" type="button">Compartir link</button>
+      <input class="link-caja" id="link-listo" type="text" readonly>
+    </section>
+  </main>
+  <noscript><p class="pagina">Esta página necesita internet para inscribirte.</p></noscript>
+  <script src="config.js"></script>
+  <script src="api.js"></script>
+  <script src="publico.js"></script>
+</body>
+</html>
