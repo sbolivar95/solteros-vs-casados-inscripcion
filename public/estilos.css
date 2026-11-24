@@ -2,6 +2,10 @@
 
 html { -webkit-text-size-adjust: 100%; }
 
+html.hay-clave #entrada { display: none !important; }
+html.hay-clave #panel,
+html.hay-clave #panel[hidden] { display: block !important; }
+
 body {
   margin: 0;
   font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -147,3 +151,75 @@ button:focus, input:focus, a:focus, textarea:focus {
 
 .seccion { margin-top: 22px; }
 .persona button { margin-top: 8px; }
+
+.nav-encargado {
+  display: flex;
+  margin: 12px 0 8px;
+}
+.nav-encargado a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 10px 8px;
+  margin-right: 8px;
+  border-radius: 12px;
+  border: 1px solid #14532d;
+  color: #14532d;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+}
+.nav-encargado a:last-child { margin-right: 0; }
+.nav-encargado a[aria-current="page"] {
+  background: #14532d;
+  color: #fff;
+}
+
+.pagina-dia { max-width: 52rem; }
+
+.columnas {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 12px;
+}
+
+.columna {
+  flex: 1;
+  min-width: 0;
+  margin-right: 10px;
+}
+
+.columna:last-child { margin-right: 0; }
+
+.fila-dia {
+  background: #fff;
+  border: 1px solid #e7e0d6;
+  border-radius: 12px;
+  padding: 8px 10px;
+  margin-top: 6px;
+}
+
+.fila-dia h3 { margin: 0 0 2px; font-size: 1rem; }
+.fila-dia.pagada { border-color: #a8a29e; }
+.fila-dia.jugando { border-color: #14532d; background: #f0fdf4; }
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-right: 12px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.marca input {
+  width: 22px;
+  height: 22px;
+  margin: 0 8px 0 0;
+  flex: none;
+}
+
+.alta-dia { margin-top: 10px; }
+.alta-dia .campo { margin-top: 8px; margin-bottom: 6px; }

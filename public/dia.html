@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0e6">
+  <meta name="robots" content="noindex">
+  <title>Lista del partido · Encargado</title>
+  <link rel="stylesheet" href="estilos.css">
+  <script>
+    try { if (localStorage.getItem("svs_clave")) document.documentElement.className += " hay-clave"; } catch (e) {}
+  </script>
+</head>
+<body>
+  <main class="pagina pagina-dia">
+    <header>
+      <p class="fecha">Domingo 29 de noviembre</p>
+      <h1>Lista del partido</h1>
+      <p class="aviso">Marca quién pagó y quién juega. Si alguien llegó sin inscribirse, agrégalo en su equipo.</p>
+    </header>
+
+    <form id="entrada" novalidate>
+      <p class="error" id="error-entrada" role="alert"></p>
+      <label class="campo">Clave
+        <input id="clave" type="password" autocomplete="current-password" required>
+      </label>
+      <button class="primario" id="boton-entrar" type="submit">Entrar</button>
+    </form>
+
+    <div id="panel" hidden>
+      <nav class="nav-encargado">
+        <a href="admin.html">Inscribir</a>
+        <a href="dia.html" aria-current="page">Lista del partido</a>
+      </nav>
+      <p class="error" id="error-lista" role="alert"></p>
+      <div class="columnas">
+        <section class="columna" id="col-solteros">
+          <h2>Solteros</h2>
+          <p class="meta" id="resumen-solteros"></p>
+          <div id="lista-solteros"></div>
+          <form class="alta-dia" id="alta-solteros" novalidate>
+            <label class="campo">Llegó sin inscribirse
+              <input class="caja" id="nombre-solteros" type="text" maxlength="80" placeholder="Nombre" autocomplete="off">
+            </label>
+            <button class="secundario" type="submit">Agregar a Solteros</button>
+          </form>
+        </section>
+        <section class="columna" id="col-casados">
+          <h2>Casados</h2>
+          <p class="meta" id="resumen-casados"></p>
+          <div id="lista-casados"></div>
+          <form class="alta-dia" id="alta-casados" novalidate>
+            <label class="campo">Llegó sin inscribirse
+              <input class="caja" id="nombre-casados" type="text" maxlength="80" placeholder="Nombre" autocomplete="off">
+            </label>
+            <button class="secundario" type="submit">Agregar a Casados</button>
+          </form>
+        </section>
+      </div>
+      <p class="pie">
+        <button class="secundario" id="salir" type="button">Salir</button>
+      </p>
+    </div>
+  </main>
+  <script src="config.js"></script>
+  <script src="api.js"></script>
+  <script src="dia.js"></script>
+</body>
+</html>

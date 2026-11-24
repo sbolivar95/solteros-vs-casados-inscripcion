@@ -44,13 +44,15 @@ function fechaCorta(iso) {
 }
 
 function abrirPanel() {
+  document.documentElement.className += document.documentElement.className.indexOf("hay-clave") === -1 ? " hay-clave" : "";
   document.getElementById("entrada").hidden = true;
   document.getElementById("panel").hidden = false;
 }
 
 function cerrarPanel() {
   clave = "";
-  try { sessionStorage.removeItem(CLAVE_SESION); } catch (e) {}
+  try { localStorage.removeItem(CLAVE_SESION); } catch (e) {}
+  document.documentElement.className = document.documentElement.className.replace(/\bhay-clave\b/g, "");
   document.getElementById("panel").hidden = true;
   document.getElementById("entrada").hidden = false;
   document.getElementById("clave").value = "";
@@ -176,7 +178,7 @@ function entrarCon(valor) {
       throw error;
     }
     clave = valor;
-    try { sessionStorage.setItem(CLAVE_SESION, valor); } catch (e) {}
+    try { localStorage.setItem(CLAVE_SESION, valor); } catch (e) {}
     abrirPanel();
     return refrescar();
   });
@@ -326,7 +328,7 @@ document.getElementById("clave-nueva").addEventListener("submit", function (even
   boton.disabled = true;
   rpc("cambiar_clave", { p_clave: clave, p_nueva: nueva }).then(function () {
     clave = nueva.replace(/^\s+|\s+$/g, "");
-    try { sessionStorage.setItem(CLAVE_SESION, clave); } catch (e) {}
+    try { localStorage.setItem(CLAVE_SESION, clave); } catch (e) {}
     document.getElementById("nueva").value = "";
     document.getElementById("repetir").value = "";
     ponerTexto("ok-clave", "Clave cambiada.");
@@ -340,7 +342,9 @@ document.getElementById("clave-nueva").addEventListener("submit", function (even
 document.getElementById("salir").addEventListener("click", cerrarPanel);
 
 var guardada = "";
-try { guardada = sessionStorage.getItem(CLAVE_SESION) || ""; } catch (e) { guardada = ""; }
+try { guardada = localStorage.getItem(CLAVE_SESION) || ""; } catch (e) { guardada = ""; }
 if (guardada) {
-  entrarCon(guardada).catch(function () { cerrarPanel(); });
+  clave = guardada;
+  abrirPanel();
+  refrescar().catch(function () { cerrarPanel(); });
 }
