@@ -1,3 +1,8 @@
+function inscripcionCerrada() {
+  var limite = Date.parse(CIERRE_INSCRIPCION);
+  return isFinite(limite) && Date.now() >= limite;
+}
+
 function mensajeError(status, datos) {
   var codigo = datos && datos.code;
   var mensaje = "";
@@ -12,6 +17,7 @@ function mensajeError(status, datos) {
   if (mensaje.indexOf("clave nueva invalida") !== -1) return "La clave nueva necesita entre 4 y 40 caracteres.";
   if (mensaje.indexOf("no encontrada") !== -1) return "Esa inscripción ya no está en la lista.";
   if (mensaje.indexOf("equipo invalido") !== -1) return "Elige Solteros o Casados.";
+  if (mensaje.indexOf("inscripcion cerrada") !== -1) return "La inscripción cerró el domingo a las 2:00 p.m.";
   if (status === 401 || status === 403) return "No se pudo guardar. Avisa al encargado.";
   return "No se pudo conectar. Revisa tu internet e intenta de nuevo.";
 }

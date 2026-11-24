@@ -19,6 +19,10 @@ begin
     new.celular := null;
   end if;
 
+  if TG_OP = 'INSERT' and now() >= timestamptz '2026-11-29 14:00:00-04:00' then
+    raise exception 'inscripcion cerrada';
+  end if;
+
   if char_length(new.nombre) < 2 or char_length(new.nombre) > 80 then
     raise exception 'nombre invalido';
   end if;

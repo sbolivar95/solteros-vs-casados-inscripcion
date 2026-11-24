@@ -30,6 +30,13 @@ function delEquipo(equipo) {
   return lista;
 }
 
+function aplicarCierreDia() {
+  if (!inscripcionCerrada()) return;
+  document.getElementById("alta-solteros").hidden = true;
+  document.getElementById("alta-casados").hidden = true;
+  document.getElementById("aviso-cierre-dia").hidden = false;
+}
+
 function pintar() {
   pintarColumna("solteros", "lista-solteros", "resumen-solteros");
   pintarColumna("casados", "lista-casados", "resumen-casados");
@@ -117,6 +124,7 @@ function entrarCon(valor) {
     clave = valor;
     try { localStorage.setItem(CLAVE_SESION, valor); } catch (e) {}
     abrirPanel();
+    aplicarCierreDia();
     return cargar();
   });
 }
@@ -138,6 +146,11 @@ function guardarDia(persona, pagado, juega) {
 }
 
 function agregar(equipo, idCampo) {
+  if (inscripcionCerrada()) {
+    aplicarCierreDia();
+    ponerTexto("error-lista", "La inscripción cerró el domingo a las 2:00 p.m.");
+    return;
+  }
   var nombre = limpiarNombre(document.getElementById(idCampo).value);
   if (nombre.length < 2) {
     ponerTexto("error-lista", "Escribe el nombre de quien llegó.");
@@ -185,5 +198,6 @@ try { guardada = localStorage.getItem(CLAVE_SESION) || ""; } catch (e) { guardad
 if (guardada) {
   clave = guardada;
   abrirPanel();
+  aplicarCierreDia();
   cargar().catch(function () { cerrarPanel(); });
 }

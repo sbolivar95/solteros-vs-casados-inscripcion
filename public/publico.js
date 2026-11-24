@@ -87,6 +87,10 @@ document.getElementById("form").addEventListener("submit", function (evento) {
     mostrarError(datos.error);
     return;
   }
+  if (inscripcionCerrada()) {
+    mostrarCerrado();
+    return;
+  }
   mostrarError("");
   var boton = document.getElementById("enviar");
   boton.disabled = true;
@@ -109,5 +113,12 @@ document.getElementById("form").addEventListener("submit", function (evento) {
 
 document.getElementById("link-listo").value = urlPublica();
 
+function mostrarCerrado() {
+  document.getElementById("form").hidden = true;
+  document.getElementById("aviso-cierre").hidden = true;
+  document.getElementById("cerrado").hidden = false;
+}
+
 var marca = leerMarca();
 if (marca) mostrarListo(marca.nombre, marca.equipo);
+else if (inscripcionCerrada()) mostrarCerrado();

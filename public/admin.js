@@ -58,6 +58,12 @@ function cerrarPanel() {
   document.getElementById("clave").value = "";
 }
 
+function aplicarCierreAlta() {
+  if (!inscripcionCerrada()) return;
+  document.getElementById("alta").hidden = true;
+  document.getElementById("aviso-cierre-alta").hidden = false;
+}
+
 function pintarEstado() {
   if (!estado) return;
   document.getElementById("n-solteros").textContent = String(estado.solteros || 0);
@@ -180,6 +186,7 @@ function entrarCon(valor) {
     clave = valor;
     try { localStorage.setItem(CLAVE_SESION, valor); } catch (e) {}
     abrirPanel();
+    aplicarCierreAlta();
     return refrescar();
   });
 }
@@ -240,6 +247,11 @@ document.getElementById("equipo-casados").addEventListener("click", function () 
 
 document.getElementById("alta").addEventListener("submit", function (evento) {
   evento.preventDefault();
+  if (inscripcionCerrada()) {
+    aplicarCierreAlta();
+    ponerTexto("error-alta", "La inscripción cerró el domingo a las 2:00 p.m.");
+    return;
+  }
   var nombre = limpiarNombre(document.getElementById("nombre").value);
   var celular = soloDigitos(document.getElementById("celular").value);
   if (nombre.length < 2) {
@@ -346,5 +358,6 @@ try { guardada = localStorage.getItem(CLAVE_SESION) || ""; } catch (e) { guardad
 if (guardada) {
   clave = guardada;
   abrirPanel();
+  aplicarCierreAlta();
   refrescar().catch(function () { cerrarPanel(); });
 }
