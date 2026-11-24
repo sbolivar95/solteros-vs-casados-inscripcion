@@ -68,18 +68,18 @@ function pintarEstado() {
   if (!estado) return;
   document.getElementById("n-solteros").textContent = String(estado.solteros || 0);
   document.getElementById("n-casados").textContent = String(estado.casados || 0);
-  pintarCuota("solteros", "c-solteros", "j-solteros", estado.cuota_solteros, estado.pagados_solteros);
-  pintarCuota("casados", "c-casados", "j-casados", estado.cuota_casados, estado.pagados_casados);
+  pintarCuota("solteros", "c-solteros", "j-solteros", estado.pagados_solteros);
+  pintarCuota("casados", "c-casados", "j-casados", estado.pagados_casados);
   document.getElementById("monto").value = montoParaCampo(estado.monto);
 }
 
-function pintarCuota(equipo, idCuota, idJunta, cuota, pagados) {
+function pintarCuota(equipo, idCuota, idJunta, pagados) {
   var cantidad = equipo === "solteros" ? estado.solteros : estado.casados;
   var cuotaEl = document.getElementById(idCuota);
   var juntaEl = document.getElementById(idJunta);
-  var mitad = textoDinero(estado.monto_equipo);
+  var cuota = estado.cuota != null ? estado.cuota : estado.cuota_solteros;
   if (!cantidad) {
-    cuotaEl.textContent = mitad ? "Deben juntar " + mitad : "Nadie inscrito";
+    cuotaEl.textContent = "Nadie inscrito";
     juntaEl.textContent = "";
     return;
   }
@@ -89,7 +89,7 @@ function pintarCuota(equipo, idCuota, idJunta, cuota, pagados) {
     return;
   }
   cuotaEl.textContent = textoDinero(cuota) + " por persona";
-  juntaEl.textContent = "El equipo junta " + mitad + ". Ya pagaron " + (pagados || 0) + " de " + cantidad + ".";
+  juntaEl.textContent = "Ya pagaron " + (pagados || 0) + " de " + cantidad + ".";
 }
 
 function pintarLista() {

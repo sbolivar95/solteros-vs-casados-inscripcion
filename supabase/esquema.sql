@@ -3,8 +3,8 @@
 -- Clave inicial del encargado: partido29
 -- Se cambia despues desde la pantalla del encargado.
 --
--- El monto es el total a recaudar. Cada equipo cubre la mitad,
--- y esa mitad se divide entre las personas de ese equipo.
+-- El monto es el total a recaudar. La cuota por persona es
+-- ese total dividido entre todos los inscritos.
 
 create table if not exists ajustes (
   id integer primary key check (id = 1),
@@ -119,44 +119,36 @@ set search_path = public
 as $$
 declare
   v_monto numeric;
-  v_monto_equipo numeric;
   v_solteros integer;
   v_casados integer;
+  v_total integer;
   v_pagados_solteros integer;
   v_pagados_casados integer;
-  v_cuota_solteros integer;
-  v_cuota_casados integer;
+  v_cuota integer;
 begin
   select monto into v_monto from ajustes where id = 1;
-
-  if v_monto is not null then
-    v_monto_equipo := v_monto / 2;
-  end if;
 
   select count(*) into v_solteros from inscripciones where equipo = 'solteros';
   select count(*) into v_casados from inscripciones where equipo = 'casados';
   select count(*) into v_pagados_solteros from inscripciones where equipo = 'solteros' and pagado;
   select count(*) into v_pagados_casados from inscripciones where equipo = 'casados' and pagado;
 
-  if v_solteros > 0 and v_monto_equipo is not null then
-    v_cuota_solteros := ceil(v_monto_equipo / v_solteros);
-  end if;
+  v_total := v_solteros + v_casados;
 
-  if v_casados > 0 and v_monto_equipo is not null then
-    v_cuota_casados := ceil(v_monto_equipo / v_casados);
+  if v_total > 0 and v_monto is not null then
+    v_cuota := ceil(v_monto / v_total);
   end if;
 
   return json_build_object(
     'monto', v_monto,
-    'monto_equipo', v_monto_equipo,
     'solteros', v_solteros,
     'casados', v_casados,
     'pagados_solteros', v_pagados_solteros,
     'pagados_casados', v_pagados_casados,
-    'cuota_solteros', v_cuota_solteros,
-    'cuota_casados', v_cuota_casados,
-    'junta_solteros', case when v_cuota_solteros is null then null else v_cuota_solteros * v_solteros end,
-    'junta_casados', case when v_cuota_casados is null then null else v_cuota_casados * v_casados end
+    'cuota', v_cuota,
+    'cuota_solteros', v_cuota,
+    'cuota_casados', v_cuota,
+    'junta', case when v_cuota is null then null else v_cuota * v_total end
   );
 end;
 $$;
