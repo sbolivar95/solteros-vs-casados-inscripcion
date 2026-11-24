@@ -1,6 +1,7 @@
 var CLAVE_SESION = "svs_clave";
 var clave = "";
 var gente = [];
+var estado = null;
 
 function ponerTexto(id, texto) {
   document.getElementById(id).textContent = texto || "";
@@ -30,14 +31,12 @@ function delEquipo(equipo) {
   return lista;
 }
 
-function aplicarCierreDia() {
-  if (!inscripcionCerrada()) return;
-  document.getElementById("alta-solteros").hidden = true;
-  document.getElementById("alta-casados").hidden = true;
-  document.getElementById("aviso-cierre-dia").hidden = false;
+function pintarCuota() {
+  mostrarCuota("cuota-dia", "cuota-detalle", estado, gente);
 }
 
 function pintar() {
+  pintarCuota();
   pintarColumna("solteros", "lista-solteros", "resumen-solteros");
   pintarColumna("casados", "lista-casados", "resumen-casados");
 }
@@ -77,14 +76,6 @@ function filaPersona(persona) {
   var nombre = document.createElement("h3");
   nombre.textContent = persona.nombre;
   articulo.appendChild(nombre);
-
-  if (persona.origen === "dia") {
-    var aviso = document.createElement("p");
-    aviso.className = "meta";
-    aviso.textContent = "Llegó sin inscribirse";
-    articulo.appendChild(aviso);
-  }
-
   articulo.appendChild(marca(persona, "pagado", "Pagó", !!persona.pagado));
   articulo.appendChild(marca(persona, "juega", "Juega", !!persona.juega));
   return articulo;
@@ -109,8 +100,12 @@ function marca(persona, campo, etiqueta, marcado) {
 }
 
 function cargar() {
-  return rpc("listar", { p_clave: clave }).then(function (lista) {
-    gente = Array.isArray(lista) ? lista : [];
+  return Promise.all([
+    rpc("listar", { p_clave: clave }),
+    rpc("resumen").catch(function () { return null; })
+  ]).then(function (partes) {
+    gente = Array.isArray(partes[0]) ? partes[0] : [];
+    estado = leerEstado(partes[1]);
     ponerTexto("error-lista", "");
     pintar();
   });
@@ -124,7 +119,6 @@ function entrarCon(valor) {
     clave = valor;
     try { localStorage.setItem(CLAVE_SESION, valor); } catch (e) {}
     abrirPanel();
-    aplicarCierreDia();
     return cargar();
   });
 }
@@ -145,31 +139,6 @@ function guardarDia(persona, pagado, juega) {
   });
 }
 
-function agregar(equipo, idCampo) {
-  if (inscripcionCerrada()) {
-    aplicarCierreDia();
-    ponerTexto("error-lista", "La inscripción cerró el domingo a las 2:00 p.m.");
-    return;
-  }
-  var nombre = limpiarNombre(document.getElementById(idCampo).value);
-  if (nombre.length < 2) {
-    ponerTexto("error-lista", "Escribe el nombre de quien llegó.");
-    return;
-  }
-  ponerTexto("error-lista", "");
-  rpc("llegar_sin_inscribir", {
-    p_clave: clave,
-    p_nombre: nombre,
-    p_celular: "",
-    p_equipo: equipo
-  }).then(function () {
-    document.getElementById(idCampo).value = "";
-    return cargar();
-  }).catch(function (error) {
-    ponerTexto("error-lista", error.message || "No se pudo agregar.");
-  });
-}
-
 document.getElementById("entrada").addEventListener("submit", function (evento) {
   evento.preventDefault();
   var boton = document.getElementById("boton-entrar");
@@ -181,16 +150,6 @@ document.getElementById("entrada").addEventListener("submit", function (evento) 
   });
 });
 
-document.getElementById("alta-solteros").addEventListener("submit", function (evento) {
-  evento.preventDefault();
-  agregar("solteros", "nombre-solteros");
-});
-
-document.getElementById("alta-casados").addEventListener("submit", function (evento) {
-  evento.preventDefault();
-  agregar("casados", "nombre-casados");
-});
-
 document.getElementById("salir").addEventListener("click", cerrarPanel);
 
 var guardada = "";
@@ -198,6 +157,5 @@ try { guardada = localStorage.getItem(CLAVE_SESION) || ""; } catch (e) { guardad
 if (guardada) {
   clave = guardada;
   abrirPanel();
-  aplicarCierreDia();
   cargar().catch(function () { cerrarPanel(); });
 }

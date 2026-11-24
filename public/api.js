@@ -85,6 +85,72 @@ function urlPublica() {
   return window.location.origin + base;
 }
 
+function leerEstado(datos) {
+  if (datos == null) return null;
+  if (typeof datos === "string") {
+    try {
+      datos = JSON.parse(datos);
+    } catch (e) {
+      return null;
+    }
+  }
+  if (Array.isArray(datos)) datos = datos.length ? datos[0] : null;
+  if (!datos || typeof datos !== "object") return null;
+  return datos;
+}
+
+function numeroMonto(valor) {
+  if (valor == null || valor === "") return null;
+  var n = Number(String(valor).replace(",", "."));
+  if (!isFinite(n)) return null;
+  return n;
+}
+
+function totalInscritos(estado, gente) {
+  var deLista = gente && gente.length ? gente.length : 0;
+  if (deLista) return deLista;
+  if (!estado) return 0;
+  return (Number(estado.solteros) || 0) + (Number(estado.casados) || 0);
+}
+
+function cuotaPorPersona(estado, gente, montoCampo) {
+  var total = totalInscritos(estado, gente);
+  var monto = numeroMonto(montoCampo);
+  if (monto == null && estado) monto = numeroMonto(estado.monto);
+  if (!total || monto == null || monto <= 0) return null;
+  return Math.ceil(monto / total);
+}
+
+function textoDineroComun(valor) {
+  var n = numeroMonto(valor);
+  if (n == null) return "";
+  if (Math.abs(n - Math.round(n)) < 0.001) return String(Math.round(n));
+  return String(Math.round(n * 100) / 100);
+}
+
+function mostrarCuota(idNumero, idDetalle, estado, gente, montoCampo) {
+  var elNumero = document.getElementById(idNumero);
+  var elDetalle = document.getElementById(idDetalle);
+  if (!elNumero) return;
+  var total = totalInscritos(estado, gente);
+  var cuota = cuotaPorPersona(estado, gente, montoCampo);
+  var monto = numeroMonto(montoCampo);
+  if (monto == null && estado) monto = numeroMonto(estado.monto);
+  if (cuota == null) {
+    elNumero.textContent = "–";
+    if (elDetalle) {
+      elDetalle.textContent = !total
+        ? "Cuando haya inscritos se muestra la cuota."
+        : "Carga el monto total. Se divide entre " + total + (total === 1 ? " persona." : " personas.");
+    }
+    return;
+  }
+  elNumero.textContent = textoDineroComun(cuota);
+  if (elDetalle) {
+    elDetalle.textContent = textoDineroComun(monto) + " entre " + total + (total === 1 ? " persona." : " personas.");
+  }
+}
+
 function copiarTexto(texto) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     return navigator.clipboard.writeText(texto);

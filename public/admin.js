@@ -64,26 +64,41 @@ function aplicarCierreAlta() {
   document.getElementById("aviso-cierre-alta").hidden = false;
 }
 
+function montoDelCampo() {
+  var campo = document.getElementById("monto");
+  if (!campo) return null;
+  var texto = campo.value.replace(",", ".").replace(/^\s+|\s+$/g, "");
+  return texto ? texto : null;
+}
+
+function pintarCuotaPersona() {
+  mostrarCuota("cuota-persona", "cuota-detalle", estado, gente, montoDelCampo());
+}
+
 function pintarEstado() {
-  if (!estado) return;
-  document.getElementById("n-solteros").textContent = String(estado.solteros || 0);
-  document.getElementById("n-casados").textContent = String(estado.casados || 0);
-  pintarCuota("solteros", "c-solteros", "j-solteros", estado.pagados_solteros);
-  pintarCuota("casados", "c-casados", "j-casados", estado.pagados_casados);
-  document.getElementById("monto").value = montoParaCampo(estado.monto);
+  if (estado) {
+    document.getElementById("n-solteros").textContent = String(estado.solteros || 0);
+    document.getElementById("n-casados").textContent = String(estado.casados || 0);
+    if (document.activeElement !== document.getElementById("monto")) {
+      document.getElementById("monto").value = montoParaCampo(estado.monto);
+    }
+    pintarCuota("solteros", "c-solteros", "j-solteros", estado.pagados_solteros);
+    pintarCuota("casados", "c-casados", "j-casados", estado.pagados_casados);
+  }
+  pintarCuotaPersona();
 }
 
 function pintarCuota(equipo, idCuota, idJunta, pagados) {
-  var cantidad = equipo === "solteros" ? estado.solteros : estado.casados;
+  var cantidad = equipo === "solteros" ? (estado && estado.solteros) : (estado && estado.casados);
   var cuotaEl = document.getElementById(idCuota);
   var juntaEl = document.getElementById(idJunta);
-  var cuota = estado.cuota != null ? estado.cuota : estado.cuota_solteros;
+  var cuota = cuotaPorPersona(estado, gente, montoDelCampo());
   if (!cantidad) {
     cuotaEl.textContent = "Nadie inscrito";
     juntaEl.textContent = "";
     return;
   }
-  if (entero(cuota) == null) {
+  if (cuota == null) {
     cuotaEl.textContent = "Aún sin monto";
     juntaEl.textContent = (pagados || 0) + " de " + cantidad + " ya pagaron.";
     return;
@@ -167,12 +182,13 @@ function tarjetaPersona(persona) {
 }
 
 function refrescar() {
-  return rpc("resumen").then(function (datos) {
-    estado = datos;
+  return Promise.all([
+    rpc("resumen").catch(function () { return null; }),
+    rpc("listar", { p_clave: clave })
+  ]).then(function (partes) {
+    estado = leerEstado(partes[0]);
+    gente = Array.isArray(partes[1]) ? partes[1] : [];
     pintarEstado();
-    return rpc("listar", { p_clave: clave });
-  }).then(function (lista) {
-    gente = Array.isArray(lista) ? lista : [];
     pintarLista();
   });
 }
@@ -232,7 +248,8 @@ document.getElementById("ajustes").addEventListener("submit", function (evento) 
     p_clave: clave,
     p_monto: monto
   }).then(function (datos) {
-    estado = datos;
+    estado = leerEstado(datos) || estado || {};
+    estado.monto = monto;
     pintarEstado();
     ponerTexto("ok-ajustes", "Monto guardado.");
   }).catch(function (error) {
@@ -276,7 +293,7 @@ document.getElementById("alta").addEventListener("submit", function (evento) {
     p_celular: celular,
     p_equipo: equipoAlta
   }).then(function (datos) {
-    estado = datos;
+    estado = leerEstado(datos) || estado;
     pintarEstado();
     document.getElementById("nombre").value = "";
     document.getElementById("celular").value = "";
@@ -286,6 +303,7 @@ document.getElementById("alta").addEventListener("submit", function (evento) {
     if (lista) {
       gente = Array.isArray(lista) ? lista : [];
       pintarLista();
+      pintarCuotaPersona();
     }
   }).catch(function (error) {
     ponerTexto("error-alta", error.message || "No se pudo inscribir.");
@@ -295,6 +313,7 @@ document.getElementById("alta").addEventListener("submit", function (evento) {
 });
 
 document.getElementById("buscar").addEventListener("input", pintarLista);
+document.getElementById("monto").addEventListener("input", pintarCuotaPersona);
 
 function mover(persona, equipo) {
   var destino = equipo === "casados" ? "Casados" : "Solteros";

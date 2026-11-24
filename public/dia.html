@@ -16,7 +16,7 @@
     <header>
       <p class="fecha">Domingo 29 de noviembre</p>
       <h1>Lista del partido</h1>
-      <p class="aviso">Marca quién pagó y quién juega. Si alguien llegó sin inscribirse, agrégalo en su equipo.</p>
+      <p class="aviso">Marca quién pagó y quién juega.</p>
     </header>
 
     <form id="entrada" novalidate>
@@ -32,30 +32,22 @@
         <a href="admin.html">Inscribir</a>
         <a href="dia.html" aria-current="page">Lista del partido</a>
       </nav>
-      <p class="aviso" id="aviso-cierre-dia" hidden>La inscripción cerró el domingo a las 2:00 p.m. Ya no se puede agregar a más personas. Sí puedes marcar quién pagó y quién juega.</p>
+      <article class="tarjeta" id="caja-cuota">
+        <h2>Cuota por persona</h2>
+        <p class="numero" id="cuota-dia">–</p>
+        <p class="meta" id="cuota-detalle"></p>
+      </article>
       <p class="error" id="error-lista" role="alert"></p>
       <div class="columnas">
         <section class="columna" id="col-solteros">
           <h2>Solteros</h2>
           <p class="meta" id="resumen-solteros"></p>
           <div id="lista-solteros"></div>
-          <form class="alta-dia" id="alta-solteros" novalidate>
-            <label class="campo">Llegó sin inscribirse
-              <input class="caja" id="nombre-solteros" type="text" maxlength="80" placeholder="Nombre" autocomplete="off">
-            </label>
-            <button class="secundario" type="submit">Agregar a Solteros</button>
-          </form>
         </section>
         <section class="columna" id="col-casados">
           <h2>Casados</h2>
           <p class="meta" id="resumen-casados"></p>
           <div id="lista-casados"></div>
-          <form class="alta-dia" id="alta-casados" novalidate>
-            <label class="campo">Llegó sin inscribirse
-              <input class="caja" id="nombre-casados" type="text" maxlength="80" placeholder="Nombre" autocomplete="off">
-            </label>
-            <button class="secundario" type="submit">Agregar a Casados</button>
-          </form>
         </section>
       </div>
       <p class="pie">
