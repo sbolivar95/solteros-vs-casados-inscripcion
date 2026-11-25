@@ -44,16 +44,13 @@ function pintar() {
 function pintarColumna(equipo, idLista, idResumen) {
   var lista = delEquipo(equipo);
   var pagaron = 0;
-  var juegan = 0;
   var i;
   for (i = 0; i < lista.length; i += 1) {
     if (lista[i].pagado) pagaron += 1;
-    if (lista[i].juega) juegan += 1;
   }
   document.getElementById(idResumen).textContent =
     lista.length + (lista.length === 1 ? " inscrito" : " inscritos") +
-    " · " + pagaron + (pagaron === 1 ? " pagó" : " pagaron") +
-    " · " + juegan + (juegan === 1 ? " juega" : " juegan");
+    " · " + pagaron + (pagaron === 1 ? " pagó" : " pagaron");
 
   var raiz = document.getElementById(idLista);
   raiz.innerHTML = "";
@@ -69,31 +66,26 @@ function pintarColumna(equipo, idLista, idResumen) {
 
 function filaPersona(persona) {
   var articulo = document.createElement("article");
-  articulo.className = "fila-dia";
-  if (persona.juega) articulo.className += " jugando";
-  else if (persona.pagado) articulo.className += " pagada";
+  articulo.className = persona.pagado ? "fila-dia pagada" : "fila-dia";
 
   var nombre = document.createElement("h3");
   nombre.textContent = persona.nombre;
   articulo.appendChild(nombre);
-  articulo.appendChild(marca(persona, "pagado", "Pagó", !!persona.pagado));
-  articulo.appendChild(marca(persona, "juega", "Juega", !!persona.juega));
+  articulo.appendChild(marcaPago(persona));
   return articulo;
 }
 
-function marca(persona, campo, etiqueta, marcado) {
+function marcaPago(persona) {
   var label = document.createElement("label");
   label.className = "marca";
   var caja = document.createElement("input");
   caja.type = "checkbox";
-  caja.checked = marcado;
+  caja.checked = !!persona.pagado;
   caja.addEventListener("change", function () {
-    var pagado = campo === "pagado" ? caja.checked : !!persona.pagado;
-    var juega = campo === "juega" ? caja.checked : !!persona.juega;
-    guardarDia(persona, pagado, juega);
+    guardarPago(persona, caja.checked);
   });
   var texto = document.createElement("span");
-  texto.textContent = etiqueta;
+  texto.textContent = "Pagó";
   label.appendChild(caja);
   label.appendChild(texto);
   return label;
@@ -104,7 +96,7 @@ function cargar() {
     rpc("listar", { p_clave: clave }),
     rpc("resumen").catch(function () { return null; })
   ]).then(function (partes) {
-    gente = Array.isArray(partes[0]) ? partes[0] : [];
+    gente = ordenarPorInscripcion(Array.isArray(partes[0]) ? partes[0] : []);
     estado = leerEstado(partes[1]);
     ponerTexto("error-lista", "");
     pintar();
@@ -123,15 +115,8 @@ function entrarCon(valor) {
   });
 }
 
-function guardarDia(persona, pagado, juega) {
+function guardarPago(persona, pagado) {
   rpc("marcar_pago", { p_clave: clave, p_id: persona.id, p_pagado: pagado }).then(function () {
-    return rpc("marcar_dia", {
-      p_clave: clave,
-      p_id: persona.id,
-      p_vino: juega,
-      p_juega: juega
-    });
-  }).then(function () {
     return cargar();
   }).catch(function (error) {
     ponerTexto("error-lista", error.message || "No se pudo guardar.");

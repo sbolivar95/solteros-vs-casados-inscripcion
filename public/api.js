@@ -85,6 +85,19 @@ function urlPublica() {
   return window.location.origin + base;
 }
 
+function ordenarPorInscripcion(lista) {
+  var copia = Array.isArray(lista) ? lista.slice() : [];
+  copia.sort(function (a, b) {
+    var ta = Date.parse(a && a.creado_en);
+    var tb = Date.parse(b && b.creado_en);
+    if (isFinite(tb) && isFinite(ta) && tb !== ta) return tb - ta;
+    if (isFinite(tb) && !isFinite(ta)) return 1;
+    if (isFinite(ta) && !isFinite(tb)) return -1;
+    return (Number(b && b.id) || 0) - (Number(a && a.id) || 0);
+  });
+  return copia;
+}
+
 function leerEstado(datos) {
   if (datos == null) return null;
   if (typeof datos === "string") {

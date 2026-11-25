@@ -187,7 +187,7 @@ function refrescar() {
     rpc("listar", { p_clave: clave })
   ]).then(function (partes) {
     estado = leerEstado(partes[0]);
-    gente = Array.isArray(partes[1]) ? partes[1] : [];
+    gente = ordenarPorInscripcion(Array.isArray(partes[1]) ? partes[1] : []);
     pintarEstado();
     pintarLista();
   });
@@ -301,7 +301,7 @@ document.getElementById("alta").addEventListener("submit", function (evento) {
     return rpc("listar", { p_clave: clave });
   }).then(function (lista) {
     if (lista) {
-      gente = Array.isArray(lista) ? lista : [];
+      gente = ordenarPorInscripcion(Array.isArray(lista) ? lista : []);
       pintarLista();
       pintarCuotaPersona();
     }
