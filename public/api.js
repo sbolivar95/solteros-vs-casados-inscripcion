@@ -112,55 +112,47 @@ function leerEstado(datos) {
   return datos;
 }
 
-function numeroMonto(valor) {
-  if (valor == null || valor === "") return null;
-  var n = Number(String(valor).replace(",", "."));
-  if (!isFinite(n)) return null;
+function cuotaFija() {
+  var n = Number(typeof CUOTA_PERSONA !== "undefined" ? CUOTA_PERSONA : 25);
+  return isFinite(n) && n > 0 ? n : 25;
+}
+
+function textoBs(valor) {
+  var n = Number(valor);
+  if (!isFinite(n)) n = 0;
+  if (Math.abs(n - Math.round(n)) < 0.001) return String(Math.round(n)) + " Bs";
+  return String(Math.round(n * 100) / 100) + " Bs";
+}
+
+function personasPagaron(gente, equipo) {
+  var n = 0;
+  var i;
+  if (!gente) return 0;
+  for (i = 0; i < gente.length; i += 1) {
+    if (equipo && gente[i].equipo !== equipo) continue;
+    if (gente[i].pagado) n += 1;
+  }
   return n;
 }
 
-function totalInscritos(estado, gente) {
-  var deLista = gente && gente.length ? gente.length : 0;
-  if (deLista) return deLista;
-  if (!estado) return 0;
-  return (Number(estado.solteros) || 0) + (Number(estado.casados) || 0);
+function totalRecaudado(gente, equipo) {
+  return personasPagaron(gente, equipo) * cuotaFija();
 }
 
-function cuotaPorPersona(estado, gente, montoCampo) {
-  var total = totalInscritos(estado, gente);
-  var monto = numeroMonto(montoCampo);
-  if (monto == null && estado) monto = numeroMonto(estado.monto);
-  if (!total || monto == null || monto <= 0) return null;
-  return Math.ceil(monto / total);
+function mostrarCuotaFija(idNumero) {
+  var elNumero = document.getElementById(idNumero);
+  if (elNumero) elNumero.textContent = textoBs(cuotaFija());
 }
 
-function textoDineroComun(valor) {
-  var n = numeroMonto(valor);
-  if (n == null) return "";
-  if (Math.abs(n - Math.round(n)) < 0.001) return String(Math.round(n));
-  return String(Math.round(n * 100) / 100);
-}
-
-function mostrarCuota(idNumero, idDetalle, estado, gente, montoCampo) {
+function mostrarRecaudado(idNumero, idDetalle, gente) {
   var elNumero = document.getElementById(idNumero);
   var elDetalle = document.getElementById(idDetalle);
-  if (!elNumero) return;
-  var total = totalInscritos(estado, gente);
-  var cuota = cuotaPorPersona(estado, gente, montoCampo);
-  var monto = numeroMonto(montoCampo);
-  if (monto == null && estado) monto = numeroMonto(estado.monto);
-  if (cuota == null) {
-    elNumero.textContent = "–";
-    if (elDetalle) {
-      elDetalle.textContent = !total
-        ? "Cuando haya inscritos se muestra la cuota."
-        : "Carga el monto total. Se divide entre " + total + (total === 1 ? " persona." : " personas.");
-    }
-    return;
-  }
-  elNumero.textContent = textoDineroComun(cuota);
+  var pagaron = personasPagaron(gente);
+  var total = gente && gente.length ? gente.length : 0;
+  if (elNumero) elNumero.textContent = textoBs(totalRecaudado(gente));
   if (elDetalle) {
-    elDetalle.textContent = textoDineroComun(monto) + " entre " + total + (total === 1 ? " persona." : " personas.");
+    elDetalle.textContent = pagaron + (pagaron === 1 ? " pagó" : " pagaron") +
+      " de " + total + " × " + textoBs(cuotaFija());
   }
 }
 

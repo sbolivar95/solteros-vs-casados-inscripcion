@@ -31,12 +31,9 @@ function delEquipo(equipo) {
   return lista;
 }
 
-function pintarCuota() {
-  mostrarCuota("cuota-dia", "cuota-detalle", estado, gente);
-}
-
 function pintar() {
-  pintarCuota();
+  mostrarCuotaFija("cuota-dia");
+  mostrarRecaudado("recaudado", "recaudado-detalle", gente);
   pintarColumna("solteros", "lista-solteros", "resumen-solteros");
   pintarColumna("casados", "lista-casados", "resumen-casados");
 }
@@ -50,7 +47,8 @@ function pintarColumna(equipo, idLista, idResumen) {
   }
   document.getElementById(idResumen).textContent =
     lista.length + (lista.length === 1 ? " inscrito" : " inscritos") +
-    " · " + pagaron + (pagaron === 1 ? " pagó" : " pagaron");
+    " · " + pagaron + (pagaron === 1 ? " pagó" : " pagaron") +
+    " · " + textoBs(pagaron * cuotaFija());
 
   var raiz = document.getElementById(idLista);
   raiz.innerHTML = "";

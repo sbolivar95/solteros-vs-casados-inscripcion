@@ -34,8 +34,12 @@
       </nav>
       <article class="tarjeta" id="caja-cuota">
         <h2>Cuota por persona</h2>
-        <p class="numero" id="cuota-persona">–</p>
-        <p class="meta" id="cuota-detalle"></p>
+        <p class="numero" id="cuota-persona">25 Bs</p>
+      </article>
+      <article class="tarjeta" id="caja-recaudado">
+        <h2>Recaudado</h2>
+        <p class="numero" id="recaudado">0 Bs</p>
+        <p class="meta" id="recaudado-detalle"></p>
       </article>
       <section class="conteos" aria-live="polite">
         <article class="tarjeta">
@@ -51,17 +55,6 @@
           <p class="meta" id="j-casados"></p>
         </article>
       </section>
-
-      <form id="ajustes" class="seccion" novalidate>
-        <h2>Monto a recaudar</h2>
-        <p class="ayuda">Ese total se divide entre todas las personas inscritas. Solteros y casados pagan la misma cuota.</p>
-        <p class="error" id="error-ajustes" role="alert"></p>
-        <p class="ok" id="ok-ajustes"></p>
-        <label class="campo">Monto total
-          <input class="caja" id="monto" type="text" inputmode="decimal" autocomplete="off" placeholder="500">
-        </label>
-        <button class="primario" id="guardar-ajustes" type="submit">Guardar monto</button>
-      </form>
 
       <p class="aviso seccion" id="aviso-cierre-alta" hidden>La inscripción cerró el domingo a las 2:00 p.m. Ya no se puede anotar a más personas.</p>
       <form id="alta" class="seccion" novalidate>

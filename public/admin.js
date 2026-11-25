@@ -4,33 +4,8 @@ var estado = null;
 var gente = [];
 var equipoAlta = "";
 
-function entero(valor) {
-  if (valor == null || valor === "") return null;
-  var n = Number(valor);
-  if (!isFinite(n)) return null;
-  return Math.round(n);
-}
-
-function textoDinero(valor) {
-  if (valor == null || valor === "") return "";
-  var n = Number(valor);
-  if (!isFinite(n)) return "";
-  if (Math.abs(n - Math.round(n)) < 0.001) return String(Math.round(n));
-  return String(Math.round(n * 100) / 100);
-}
-
 function ponerTexto(id, texto) {
   document.getElementById(id).textContent = texto || "";
-}
-
-function montoParaCampo(valor) {
-  var n = entero(valor);
-  if (n == null) {
-    if (valor == null || valor === "") return "";
-    var crudo = Number(valor);
-    return isFinite(crudo) ? String(crudo) : "";
-  }
-  return String(n);
 }
 
 function fechaCorta(iso) {
@@ -64,47 +39,41 @@ function aplicarCierreAlta() {
   document.getElementById("aviso-cierre-alta").hidden = false;
 }
 
-function montoDelCampo() {
-  var campo = document.getElementById("monto");
-  if (!campo) return null;
-  var texto = campo.value.replace(",", ".").replace(/^\s+|\s+$/g, "");
-  return texto ? texto : null;
-}
-
-function pintarCuotaPersona() {
-  mostrarCuota("cuota-persona", "cuota-detalle", estado, gente, montoDelCampo());
+function pintarTotales() {
+  mostrarCuotaFija("cuota-persona");
+  mostrarRecaudado("recaudado", "recaudado-detalle", gente);
 }
 
 function pintarEstado() {
-  if (estado) {
-    document.getElementById("n-solteros").textContent = String(estado.solteros || 0);
-    document.getElementById("n-casados").textContent = String(estado.casados || 0);
-    if (document.activeElement !== document.getElementById("monto")) {
-      document.getElementById("monto").value = montoParaCampo(estado.monto);
-    }
-    pintarCuota("solteros", "c-solteros", "j-solteros", estado.pagados_solteros);
-    pintarCuota("casados", "c-casados", "j-casados", estado.pagados_casados);
-  }
-  pintarCuotaPersona();
+  var nSolteros = gente.length ? delEquipoCount("solteros") : (estado && estado.solteros) || 0;
+  var nCasados = gente.length ? delEquipoCount("casados") : (estado && estado.casados) || 0;
+  document.getElementById("n-solteros").textContent = String(nSolteros);
+  document.getElementById("n-casados").textContent = String(nCasados);
+  pintarEquipo("solteros", "c-solteros", "j-solteros", nSolteros);
+  pintarEquipo("casados", "c-casados", "j-casados", nCasados);
+  pintarTotales();
 }
 
-function pintarCuota(equipo, idCuota, idJunta, pagados) {
-  var cantidad = equipo === "solteros" ? (estado && estado.solteros) : (estado && estado.casados);
+function delEquipoCount(equipo) {
+  var n = 0;
+  var i;
+  for (i = 0; i < gente.length; i += 1) {
+    if (gente[i].equipo === equipo) n += 1;
+  }
+  return n;
+}
+
+function pintarEquipo(equipo, idCuota, idJunta, cantidad) {
   var cuotaEl = document.getElementById(idCuota);
   var juntaEl = document.getElementById(idJunta);
-  var cuota = cuotaPorPersona(estado, gente, montoDelCampo());
+  var pagados = personasPagaron(gente, equipo);
   if (!cantidad) {
     cuotaEl.textContent = "Nadie inscrito";
     juntaEl.textContent = "";
     return;
   }
-  if (cuota == null) {
-    cuotaEl.textContent = "Aún sin monto";
-    juntaEl.textContent = (pagados || 0) + " de " + cantidad + " ya pagaron.";
-    return;
-  }
-  cuotaEl.textContent = textoDinero(cuota) + " por persona";
-  juntaEl.textContent = "Ya pagaron " + (pagados || 0) + " de " + cantidad + ".";
+  cuotaEl.textContent = textoBs(cuotaFija()) + " por persona";
+  juntaEl.textContent = pagados + " de " + cantidad + " ya pagaron · " + textoBs(totalRecaudado(gente, equipo));
 }
 
 function pintarLista() {
@@ -213,14 +182,6 @@ function elegirAlta(equipo) {
   document.getElementById("equipo-casados").setAttribute("aria-pressed", equipo === "casados" ? "true" : "false");
 }
 
-function leerMonto() {
-  var texto = document.getElementById("monto").value.replace(",", ".").replace(/^\s+|\s+$/g, "");
-  if (!texto) return null;
-  var n = Number(texto);
-  if (!isFinite(n) || n <= 0) return { error: "El monto tiene que ser mayor que cero." };
-  return n;
-}
-
 document.getElementById("entrada").addEventListener("submit", function (evento) {
   evento.preventDefault();
   var valor = document.getElementById("clave").value;
@@ -228,32 +189,6 @@ document.getElementById("entrada").addEventListener("submit", function (evento) 
   boton.disabled = true;
   entrarCon(valor).catch(function (error) {
     ponerTexto("error-entrada", error.message || "No se pudo entrar.");
-  }).then(function () {
-    boton.disabled = false;
-  });
-});
-
-document.getElementById("ajustes").addEventListener("submit", function (evento) {
-  evento.preventDefault();
-  var monto = leerMonto();
-  if (monto && monto.error) {
-    ponerTexto("error-ajustes", monto.error);
-    return;
-  }
-  ponerTexto("error-ajustes", "");
-  ponerTexto("ok-ajustes", "");
-  var boton = document.getElementById("guardar-ajustes");
-  boton.disabled = true;
-  rpc("guardar_ajustes", {
-    p_clave: clave,
-    p_monto: monto
-  }).then(function (datos) {
-    estado = leerEstado(datos) || estado || {};
-    estado.monto = monto;
-    pintarEstado();
-    ponerTexto("ok-ajustes", "Monto guardado.");
-  }).catch(function (error) {
-    ponerTexto("error-ajustes", error.message || "No se pudo guardar.");
   }).then(function () {
     boton.disabled = false;
   });
@@ -303,7 +238,7 @@ document.getElementById("alta").addEventListener("submit", function (evento) {
     if (lista) {
       gente = ordenarPorInscripcion(Array.isArray(lista) ? lista : []);
       pintarLista();
-      pintarCuotaPersona();
+      pintarTotales();
     }
   }).catch(function (error) {
     ponerTexto("error-alta", error.message || "No se pudo inscribir.");
@@ -313,11 +248,10 @@ document.getElementById("alta").addEventListener("submit", function (evento) {
 });
 
 document.getElementById("buscar").addEventListener("input", pintarLista);
-document.getElementById("monto").addEventListener("input", pintarCuotaPersona);
 
 function mover(persona, equipo) {
   var destino = equipo === "casados" ? "Casados" : "Solteros";
-  var seguro = window.confirm("Si pasas a " + persona.nombre + " a " + destino + ", la cuota de los dos equipos cambia. ¿Lo haces?");
+  var seguro = window.confirm("¿Pasas a " + persona.nombre + " a " + destino + "?");
   if (!seguro) return;
   rpc("cambiar_equipo", { p_clave: clave, p_id: persona.id, p_equipo: equipo }).then(function () {
     return refrescar();
@@ -336,7 +270,7 @@ function marcarPago(persona, pagado) {
 }
 
 function eliminar(persona) {
-  var seguro = window.confirm("Si quitas a " + persona.nombre + ", la cuota de su equipo cambia para todos. ¿La quitas?");
+  var seguro = window.confirm("¿Quitas a " + persona.nombre + " de la lista?");
   if (!seguro) return;
   rpc("quitar", { p_clave: clave, p_id: persona.id }).then(function () {
     return refrescar();
